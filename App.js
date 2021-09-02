@@ -1,44 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, SectionList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SectionList, FlatList } from 'react-native';
 
 export default function App() {
+
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    
+    fetch("https://jsonplaceholder.typicode.com/users")
+    .then(response => response.json())
+    .then(data => {
+      setUsers(data)
+      setLoading(false)
+    })
+    
+  }, [])
+
+  if(loading){
+    return <View style={styles.center}><Text>Cargando...</Text></View>
+  }
+
   return (
     <View style={styles.container}>
-      <SectionList 
-        sections={[{
-          title: "Grupo 1", 
-          data: [
-            { key: "1", name: "Nicolas" },
-            { key: "2", name: "Maduro" },
-            { key: "3", name: "Susy" },
-            { key: "4", name: "Luis" },
-            { key: "5", name: "Erme" },
-          ]
-        },
-        {
-          title: "Grupo 2", 
-          data: [
-            { key: "6", name: "Nicolas" },
-            { key: "7", name: "Maduro" },
-            { key: "8", name: "Susy" },
-            { key: "9", name: "Luis" },
-            { key: "10", name: "Erme" }
-          ]
-        },
-        {
-          title: "Grupo 3", 
-          data: [
-            { key: "11", name: "Nicolas" },
-            { key: "12", name: "Maduro" },
-            { key: "13", name: "Susy" },
-            { key: "14", name: "Luis" },
-            { key: "15", name: "Erme" },
-          ]
-        }
-        ]}
+      <FlatList 
+        data={users}
         renderItem={({ item }) => <Text style={styles.item}>{item.name}</Text>}
-        renderSectionHeader={({ section }) => <Text style={styles.section}>{section.title}</Text>}
+        keyExtractor={item => String(item.id)}
       />
       <StatusBar style="auto" />
     </View>
@@ -60,13 +49,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
-  section: {
-    fontSize: 16,
-    fontWeight: "bold",
-    backgroundColor: "#eee",
-    paddingTop: 2,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 2,
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
